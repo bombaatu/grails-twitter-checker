@@ -1,0 +1,23 @@
+<plugin name='twitter-checker' version='0.3' grailsVersion='1.3.8 &gt; *'>
+  <author>Alberto Vilches</author>
+  <authorEmail>vilches@gmail.com</authorEmail>
+  <title>Twitter checker Plugin (followers, timeline, mentions and RTs checker)</title>
+  <description>
+Uses the Twitter4J api (with OAuth) to periodically check (using Quartz) for new followers and unfollows, and trigger events to send emails/direct messages or whatever you want.
+Checks your timeline, mentions to you and RTs of you, and show it in your site with a very simple TagLib.</description>
+  <documentation>http://grails.org/plugin/twitter-checker</documentation>
+  <resources>
+    <resource>UrlMappings</resource>
+    <resource>twitterChecker.CheckFollowersJob</resource>
+    <resource>twitterChecker.CheckMentionsJob</resource>
+    <resource>twitterChecker.CheckRetweetsJob</resource>
+    <resource>twitterChecker.CheckTimelineJob</resource>
+    <resource>twitterChecker.Statuses</resource>
+    <resource>twitterChecker.TwitterCheckerService</resource>
+    <resource>twitterChecker.TwitterCheckerTagLib</resource>
+  </resources>
+  <dependencies>
+    <plugin name='quartz' version='0.4.1 &gt; *' />
+  </dependencies>
+  <behavior />
+</plugin>

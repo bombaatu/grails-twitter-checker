@@ -3,7 +3,7 @@ import twitterChecker.*
 
 class TwitterCheckerGrailsPlugin {
     def version = "0.3"
-    def grailsVersion = "1.3.8 > *"
+    def grailsVersion = "2.0 > *"
     def dependsOn = [quartz: "0.4.1 > *"]
     def pluginExcludes = [
             "grails-app/views/error.gsp"

@@ -1,15 +1,19 @@
 package twitterChecker
 
-import org.codehaus.groovy.grails.commons.*
-import twitter4j.*
-import twitter4j.http.*
+import twitter4j.Twitter
+import twitter4j.TwitterException
+import twitter4j.TwitterFactory
+import twitter4j.auth.AccessToken
+import twitter4j.auth.RequestToken
 
 class TwitterCheckerController {
 
     def twitterCheckerService
 
-    def index = {
-        def configured = ConfigurationHolder.config.twitterChecker.oauth.consumerKey && ConfigurationHolder.config.twitterChecker.oauth.consumerSecret
+    def index() {
+        def conf = grailsApplication.config.twitterChecker
+
+        def configured = conf.oauth.consumerKey && conf.oauth.consumerSecret
 
         if (!configured) {
             render
@@ -29,18 +33,20 @@ class TwitterCheckerController {
             return
         }
 
-        configured = ConfigurationHolder.config.twitterChecker.token && ConfigurationHolder.config.twitterChecker.tokenSecret
+        configured = conf.token && conf.tokenSecret
         if (!configured) {
             render view: "/twitterChecker/index"
-        } else {
+        }
+        else {
             render view: "/twitterChecker/demo"
         }
-
     }
 
-    def auth = {
+    def auth() {
+        def conf = grailsApplication.config.twitterChecker
+
         Twitter twitter = new TwitterFactory().getInstance()
-        twitter.setOAuthConsumer(ConfigurationHolder.config.twitterChecker.oauth.consumerKey, ConfigurationHolder.config.twitterChecker.oauth.consumerSecret)
+        twitter.setOAuthConsumer(conf.oauth.consumerKey, conf.oauth.consumerSecret)
 
         RequestToken requestToken = twitter.getOAuthRequestToken()
 
@@ -49,27 +55,28 @@ class TwitterCheckerController {
         redirect url: requestToken.getAuthorizationURL()
     }
 
-
-    def addAccount = {
+    def addAccount() {
 
         RequestToken requestToken = session.requestToken
         if (!requestToken) {
             flash.error = "You need a new PIN first"
-            return redirect(action:index)
+            redirect(action: 'index')
+            return
         }
 
-        session.requestToken = null
+        session.removeAttribute('requestToken')
 
         Twitter twitter = new TwitterFactory().getInstance()
-        twitter.setOAuthConsumer(ConfigurationHolder.config.twitterChecker.oauth.consumerKey, ConfigurationHolder.config.twitterChecker.oauth.consumerSecret)
-
+        twitter.setOAuthConsumer(conf.oauth.consumerKey, conf.oauth.consumerSecret)
 
         AccessToken accessToken
         try {
             accessToken = twitter.getOAuthAccessToken(requestToken, params.pin)
-        } catch (TwitterException e) {
+        }
+        catch (TwitterException e) {
             flash.error = e.message
-            return redirect(action:index)
+            redirect(action: 'index')
+            return
         }
 
         //persist to the accessToken for future reference.
@@ -87,6 +94,6 @@ twitterChecker {
 </body></html>"""
     }
 
-    def demo = {
+    def demo() {
     }
 }

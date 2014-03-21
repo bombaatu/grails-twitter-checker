@@ -6,10 +6,12 @@
  ****************************************/
 package twitterChecker
 
-import org.apache.commons.logging.*
-import org.springframework.beans.factory.annotation.*
-import org.springframework.stereotype.*
-import twitter4j.*
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+
+import twitter4j.User
 
 @Component("DefaultTwitterCheckerListenerBean")
 class DefaultTwitterCheckerListener {
@@ -17,36 +19,34 @@ class DefaultTwitterCheckerListener {
     @Autowired
     TwitterCheckerService twitterCheckerService
 
-    static Log log = LogFactory.getLog(DefaultTwitterCheckerListener.class.getName())
+    static Log log = LogFactory.getLog(this)
 
-    def onNewFollowers = { ids ->
-        ids.each { id ->
+    void onNewFollowers(ids) {
+        for (id in ids) {
             User user = twitterCheckerService.showUser(id) // The showUser() method makes a real Twitter request to get the user info
             log.debug "New follower: @${user.screenName}"
 
 //            twitterCheckerService.sendDirectMessage(id, "Thank you for following me!")
-
         }
     }
 
-    def onUnfollows = { ids ->
-        ids.each { id ->
+    void onUnfollows(ids) {
+        for (id in ids) {
             User user = twitterCheckerService.showUser(id)
             log.debug  "Unfollow: @${user.screenName}"
 
 //            twitterCheckerService.updateStatus("See you soon @${user.screenName}!")
-
         }
     }
 
-    def onMentions = { statuses ->
-        statuses.each { status ->
+    void onMentions(statuses) {
+        for (status in statuses) {
             log.debug  "New mention: $status.text"
         }
     }
 
-    def onRetweets = { statuses ->
-        statuses.each { status ->
+    void onRetweets(statuses) {
+        for (status in statuses) {
             log.debug  "New RT: $status.text"
         }
     }

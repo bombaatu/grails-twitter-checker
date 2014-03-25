@@ -1,0 +1,8 @@
+*.log
+/target
+grails-twitter-checker-*.zip
+grails-twitter-checker-*.zip.sha1
+plugin.xml
+/web-app
+*.iml
+.idea

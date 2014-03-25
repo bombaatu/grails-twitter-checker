@@ -7,37 +7,37 @@
 
 package twitterChecker
 
-import org.apache.juli.logging.*
-import org.codehaus.groovy.grails.commons.*
-import org.springframework.beans.factory.*
-import twitter4j.*
-import twitter4j.auth.*
+import org.springframework.beans.factory.InitializingBean
+
+import twitter4j.Twitter
+import twitter4j.TwitterFactory
+import twitter4j.auth.AccessToken
 
 class TwitterCheckerService implements InitializingBean {
 
-    static scope = 'singleton'
     static transactional = false
-    static Log log = LogFactory.getLog(TwitterCheckerService.class.getName())
+
+    def grailsApplication
 
     @Delegate Twitter twitter = new TwitterFactory().getInstance()
 
     void afterPropertiesSet() {
-        configureOauth()
-    }
-
-    private def configureOauth() {
-        def conf = ConfigurationHolder.config.twitterChecker
+        def conf = grailsApplication.config.twitterChecker
         def configured = conf.oauth.consumerKey && conf.oauth.consumerSecret
-        if (configured)
+        if (configured) {
             twitter.setOAuthConsumer(conf.oauth.consumerKey, conf.oauth.consumerSecret)
-        else
+        }
+        else {
             log.error("OAuth configuration not defined in Config.groovy: twitterChecker.oauth.consumerKey or twitterChecker.oauth.consumerSecret missing")
+        }
 
         configured = conf.token && conf.tokenSecret
-        if (configured)
+        if (configured) {
             twitter.setOAuthAccessToken(new AccessToken(conf.token, conf.tokenSecret))
-        else
+        }
+        else {
             log.error("OAuth configuration not defined in Config.groovy: twitterChecker.token or twitterChecker.tokenSecret missing")
+        }
     }
 
     def cachedMentions = []
